@@ -1,9 +1,10 @@
-import datetime
 import re
 from unittest import skipUnless, TestCase
 
 from openelex.lib.text import ocd_type_id
-from openelex.tests import cache_file_exists
+from openelex.tests import (cache_file_exists, CACHED_FILE_MISSING_MSG,
+    LoaderPrepMixin)
+
 from openelex.us.ia.load import (ExcelPrecinctResultLoader,
     ExcelPrecinctPre2010ResultLoader, ExcelPrecinct2010PrimaryResultLoader,
     ExcelPrecinct2010GeneralResultLoader,
@@ -16,23 +17,6 @@ from openelex.us.ia.load import (ExcelPrecinctResultLoader,
     ExcelPrecinct2010GeneralPoweshiekResultLoader, ExcelPrecinct2012ResultLoader,
     ExcelPrecinct2013ResultLoader,
     ExcelPrecinct2014ResultLoader, LoadResults, PreprocessedResultsLoader)
-
-
-CACHED_FILE_MISSING_MSG = ("Cached results file does not exist. Try running "
-    "the fetch task before running this test")
-
-
-class LoaderPrepMixin(object):
-    def _get_mapping(self, filename):
-        return self.loader.datasource.mapping_for_file(filename)
-
-    def _prep_loader_attrs(self, mapping):
-        # HACK: set loader's mapping attribute
-        # so we can test if loader._file_handle exists.  This
-        # usually happens in the loader's run() method.
-        self.loader.source = mapping['generated_filename']
-        self.loader.election_id = mapping['election']
-        self.loader.timestamp = datetime.datetime.now()
 
 
 class TestLoadResults(TestCase):
