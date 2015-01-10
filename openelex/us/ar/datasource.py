@@ -1,9 +1,5 @@
 import os.path
-import re
-import urlparse
 
-from bs4 import BeautifulSoup
-import requests
 import clarify
 import unicodecsv
 
@@ -163,7 +159,7 @@ class Datasource(BaseDatasource):
                 Default is "xml".
         """
         base_url = election['direct_links'][0]
-        jurisdiction = clarity.Jurisdiction(url=base_url, level='state')
+        jurisdiction = clarify.Jurisdiction(url=base_url, level='state')
         return self._build_election_metadata_clarity_county(election, fmt, jurisdiction) +\
             self._build_election_metadata_clarity_precinct(election, fmt, jurisdiction)
 

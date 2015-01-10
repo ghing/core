@@ -1,5 +1,7 @@
 from unittest import TestCase, skipUnless
 
+from mock import patch
+
 from openelex.tests import (cache_file_exists, CACHED_FILE_MISSING_MSG,
     LoaderPrepMixin)
 
@@ -27,8 +29,27 @@ class TestClarityLoader(LoaderPrepMixin, TestCase):
 
     @skipUnless(cache_file_exists('ar',
         '20120522__ar__primary__van_buren__precinct.xml'), CACHED_FILE_MISSING_MSG)
-    def test_results(self):
+    # TODO: What's the correct way to do multiple patches?
+    @patch('openelex.base.load.BaseLoader._build_common_election_kwargs')
+    @patch('openelex.us.ar.datasource.Datasource.mapping_for_file')
+    def test_results(self, mock_mapping_for_file,
+                     mock_build_common_election_kwargs):
         filename = '20120522__ar__primary__van_buren__precinct.xml'
+
+        # Mock Datasource.mapping_for_file() so we don't have to hit the real API
+        # TODO: Valid mapping dict here.  I'm just trying to include enough
+        # to write these tests
+        mock_mapping_for_file.return_value = {
+            'generated_filename': filename, 
+            'election': 'ia-2012-05-22-primary',
+        }
+
+        # Mock BaseLoader._build_common_election_kwargs so we don't have to
+        # hit the real API.
+        # TODO: Valid dict here.  I'm just trying to include enough detail to
+        # make the calling code work without hitting the API
+        mock_build_common_election_kwargs.return_value = {}
+
         mapping = self._get_mapping(filename)
         self._prep_loader_attrs(mapping)
 
@@ -49,5 +70,3 @@ class TestClarityLoader(LoaderPrepMixin, TestCase):
         results = [r for r in self.loader._results(mapping)
             if r.office == "State Representative" and r.district == "66"]
         self.assertEqual(len(results), num_results_expected)
-
-

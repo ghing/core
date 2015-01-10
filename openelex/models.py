@@ -64,6 +64,7 @@ VOTES_TYPE_CHOICES = (
    'absentee',
    'provisional',
    'absentee_provisional',
+   'early',
    'election_day',
 )
 """

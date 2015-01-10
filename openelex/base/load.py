@@ -116,7 +116,7 @@ class BaseLoader(StateBase):
         year = int(re.search(r'\d{4}', self.election_id).group())
         elecs = self.datasource.elections(year)[year]
         # Get election metadata by matching on election slug
-        elec_meta = [e for e in elecs if e['slug'] == self.election_id][0]
+        elec_meta = next(e for e in elecs if e['slug'] == self.election_id)
         kwargs = {
             'created':  self.timestamp,
             'updated': self.timestamp,
